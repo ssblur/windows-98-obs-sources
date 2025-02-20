@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>  
+        <title>Windows 95 Window Source</title>
+        <!-- font sourced from https://arnesava.github.io/w95font/ -->
+        <link rel="stylesheet" href="w95.css">
+        <script type="application/javascript">
+            window.onload = () => {
+                const params = new URLSearchParams(window.location.search);
+                document.querySelector(".headertext").innerHTML = params.get("h") ?? "Alert!"
+                document.querySelector(".bodytext").innerHTML = params.get("b") ?? ""
+                document.querySelector(".ok").innerHTML = params.get("a") ?? "OK"
+            }
+        </script>
+    </head>
+    <body>
+        <div class="alert">
+            <div class="header">
+                <div class="headertext"></div>
+                <div class="x"></div>
+            </div>
+            <div class="body">
+                <div class="bodytext"></div>
+                <div class="ok"></div>
+            </div>
+        </div>
+    </body>
+</html>
