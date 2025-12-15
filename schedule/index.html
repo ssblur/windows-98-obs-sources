@@ -60,16 +60,21 @@
             }
 
             th, td.filled {
-                border-bottom: 2px solid #fffa;
+                border-bottom: 4px solid #fffa;
                 padding: 0px;
                 margin: 0px;
                 min-width: 175px;
+                height: 40px;
             }
 
-            td.filled {
+            td.filled, td.skipped {
                 background-color: #228b22;
                 color: #fff;
-                text-align: centersssssssssssss;
+                text-align: center;
+            }
+
+            td.skipped {
+                background-color: #8888f2;
             }
 
             td.filled.active {
@@ -92,7 +97,7 @@
                 height: 640px;
             }
 
-            #teaser > video {
+            #teaser > .teaservideo {
                 position: relative;
                 top: 50%;
                 transform: translateY(-50%);
@@ -160,6 +165,7 @@
             }
 
             let slotId = 0;
+            let totalSlots = 0;
             function drawSlot(slot) {
                 const row = document.createElement("tr");
                 const day = row.appendChild(document.createElement("th"));
@@ -170,13 +176,24 @@
                 }
 
                 const game = row.appendChild(document.createElement("td"));
-                game.id = "slot" + slotId;
-                slotId++;
+                const img = document.createElement("img");
+                img.src = `videos/${slot.src ?? 'placeholder.gif'}`;
+                if(!slot.skip) {
+                    game.id = "slot" + slotId;
+                    img.id = "slotimg" + slotId;
+                    slotId++;
+                    totalSlots++;
+                    game.className = "filled";
+                } else {
+                    game.className = "skipped";
+                }
                 game.colSpan = slot.duration ?? 4;
-                game.className = "filled";
                 game.innerHTML = slot.name;
                 
                 document.querySelector("#table").appendChild(row);
+
+                img.className = "teaservideo";
+                document.querySelector("#teaser").appendChild(img);
             }
 
             let activeSlot = 0;
@@ -188,16 +205,17 @@
                 const active = document.querySelector("#slot" + activeSlot);
                 active.className = "filled active";
 
-                const slot = slots[activeSlot];
+                const slot = slots.filter(s => !s.skip)[activeSlot];
 
                 const blurb = document.querySelector("#blurb > div");
                 blurb.innerHTML = slot.blurb ?? "It's a mystery to everybody"
 
-                const teaser = document.querySelector("#teaser > video");
-                teaser.src = "videos/" + (slot.src ?? "placeholder.mp4");
-                teaser.play()
+                document.querySelectorAll(".teaservideo").forEach(element => {
+                    element.style.display = "none";
+                });
+                document.querySelector("#slotimg" + activeSlot).style.display = "block";
 
-                activeSlot = (activeSlot + 1) % slots.length;
+                activeSlot = (activeSlot + 1) % totalSlots;
             }
             setInterval(rotateActiveSlot, 8000)
         </script>
@@ -210,7 +228,7 @@
         </div>
 
         <div id="teaser" width="800" height="800">
-            <video muted src="videos/placeholder.mp4"></video>
+            <img class="teaservideo" src="videos/placeholder.gif">
             <img src="icon.png">
         </div>
 
