@@ -1,6 +1,6 @@
 @font-face {
     font-family: "W95FA";
-    src: local("W95FA"), url("./w95fa.otf") format("opentype"), url("./w95fa.woff") format("woff");
+    src: local("W95FA"), url("./resources/w95fa.otf") format("opentype"), url("./resources/w95fa.woff") format("woff");
 }
 
 * {
@@ -59,6 +59,8 @@ html, body {
     background-color: #bfb8bf;
     border-right: #555555 solid 2px;
     border-bottom: #555555 solid 2px;
+    border-top: #b2b2b2 solid 1px;
+    border-left: #b2b2b2 solid 1px;
 }
 
 .ok {

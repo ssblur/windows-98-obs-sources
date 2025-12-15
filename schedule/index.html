@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+        <script src="schedule.js"></script>
+        <style>
+            @font-face {
+                font-family: "W95FA";
+                src: local("W95FA"), url("./resources/w95fa.otf") format("opentype"), url("./resources/w95fa.woff") format("woff");
+            }
+
+            * {
+                font-family: "W95FA";
+            }
+
+            html, body {
+                position: relative;
+                background-color: #111;
+                margin: 0;
+                padding: 0;
+            }
+
+            @keyframes scroll {
+                0% {
+                    transform: translateX(0%);
+                }
+
+                20% {
+                    transform: translateX(0%);
+                }
+
+                80% {
+                    transform: translateX(calc(100vw - 100%));
+                }
+
+                100% {
+                    transform: translateX(calc(100vw - 100%));
+                }
+            }
+
+            table {
+                position: relative;
+                display: block;
+                background-color: #4169e1;
+                font-size: 1.5vw;
+                width: 100%;
+                overflow-x: hidden;
+            }
+
+            tr {
+                position: relative;
+                animation: scroll 10s linear infinite;
+                margin: 0px;
+                padding: 0px;
+                border: none;
+            }
+
+            th {
+                color: #f8fe00;
+            }
+
+            th, td.filled {
+                border-bottom: 2px solid #fffa;
+                padding: 0px;
+                margin: 0px;
+                min-width: 175px;
+            }
+
+            td.filled {
+                background-color: #228b22;
+                color: #fff;
+                text-align: centersssssssssssss;
+            }
+
+            td.filled.active {
+                background-color: #8b0000;
+            }
+
+            #blurb, #teaser {
+                position: relative;
+                display: block;
+                float: left;
+                height: auto;
+            }
+
+            #teaser {
+                position: relative;
+                width: 50%;
+                margin: 0;
+                padding: 0;
+                overflow: hidden;
+                height: 640px;
+            }
+
+            #teaser > video {
+                position: relative;
+                top: 50%;
+                transform: translateY(-50%);
+                min-width: 100%;
+                min-height: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            #teaser > img {
+                position: absolute;
+                bottom: 20px;
+                right: 20px;
+                width: 20%;
+            }
+
+            #blurb {
+                background: linear-gradient(#121992, #000002);
+                font-size: 3vw;
+                width: calc(50% - 40px);
+                padding: 20px;
+                color: #f8fe00;
+                text-align: center;
+                height: 600px;
+            }
+
+            #blurb > div {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                width: 80%;
+                padding: 20px;
+            }
+        </style>
+        <script>
+            function drawTimes() {
+                let earliestHour = 24;
+                let latestHour = 0;
+                for(const slot of slots) {
+                    const time = slot.time.split(":");
+                    const hour = parseInt(time[0]);
+                    slot.column = (hour * 2) + (parseInt(time[1] >= 30 ? 1 : 0));
+                    earliestHour = Math.min(earliestHour, hour);
+                    latestHour = Math.max(latestHour, hour + 2);
+                }
+
+                for(const slot of slots) {
+                    slot.column -= earliestHour * 2;
+                }
+
+                const row = document.createElement("tr");
+                row.className = "header";
+                row.appendChild(document.createElement("th"));
+                for(let i = earliestHour; i < latestHour; i++) {
+                    const hour = i % 12;
+                    if(hour == 0) hour = 12;
+                    const amPm = (i >= 12) ? "PM" : "AM";
+                    row.appendChild(document.createElement("th")).innerHTML = hour + ":00 " + amPm;
+                    row.appendChild(document.createElement("th")).innerHTML = hour + ":30 " + amPm;
+                }
+                const amPm = (latestHour >= 12) ? "PM" : "AM";
+                row.appendChild(document.createElement("th")).innerHTML = ((latestHour % 12)) + ":00 " + amPm;
+                document.querySelector("#table").appendChild(row)
+            }
+
+            let slotId = 0;
+            function drawSlot(slot) {
+                const row = document.createElement("tr");
+                const day = row.appendChild(document.createElement("th"));
+                day.innerHTML = slot.day;
+
+                for(let i = 0; i < slot.column; i++) {
+                    row.appendChild(document.createElement("td")).innerHTML = "";
+                }
+
+                const game = row.appendChild(document.createElement("td"));
+                game.id = "slot" + slotId;
+                slotId++;
+                game.colSpan = slot.duration ?? 4;
+                game.className = "filled";
+                game.innerHTML = slot.name;
+                
+                document.querySelector("#table").appendChild(row);
+            }
+
+            let activeSlot = 0;
+            function rotateActiveSlot() {
+                document.querySelectorAll(".filled").forEach(element => {
+                    element.className = "filled";
+                })
+
+                const active = document.querySelector("#slot" + activeSlot);
+                active.className = "filled active";
+
+                const slot = slots[activeSlot];
+
+                const blurb = document.querySelector("#blurb > div");
+                blurb.innerHTML = slot.blurb ?? "It's a mystery to everybody"
+
+                const teaser = document.querySelector("#teaser > video");
+                teaser.src = "videos/" + (slot.src ?? "placeholder.mp4");
+                teaser.play()
+
+                activeSlot = (activeSlot + 1) % slots.length;
+            }
+            setInterval(rotateActiveSlot, 8000)
+        </script>
+    </head>
+    <body>
+        <div id="blurb">
+            <div>
+                Blurb goes here...
+            </div>
+        </div>
+
+        <div id="teaser" width="800" height="800">
+            <video muted src="videos/placeholder.mp4"></video>
+            <img src="icon.png">
+        </div>
+
+        <table id="table">
+        </table>
+        <script>
+            drawTimes()
+            for (const slot of slots) {                
+                drawSlot(slot)
+            }
+            rotateActiveSlot()
+        </script>
+    </body>
+</html>

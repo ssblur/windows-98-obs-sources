@@ -3,7 +3,7 @@
     <head>  
         <title>Windows 95 Window Source</title>
         <!-- font sourced from https://arnesava.github.io/w95font/ -->
-        <link rel="stylesheet" href="w95.css">
+        <link rel="stylesheet" href="resources/w95.css">
         <script type="application/javascript">
             window.onload = () => {
                 const alerts = [
@@ -12,9 +12,12 @@
                     ["Try This!", "You can create anything using Notepad!", "Cancel"],
                     ["Don't worry", "Your time is not now.", "Wait"],
                     ["Hints", "Chat can be stressful. To help ignore it better, you can fullscreen stream with the F key or the button at the bottom right.", "OK"],
-                    ["Did you know?", "There are at least 2 genders!", "OK"],
+                    ["Did you know?", "There are more than 2 genders", "OK"],
                     ["Try This!", "Put your computer in the trash can.", "Shut Down"],
                     ["An unknown error has occured", "You should probably just give up trying to fix it tbh", "OK"],
+                    ["Alert!", "There is a man in your walls", "Yes"],
+                    ["Hints", "biur is my favorite color", "OK"],
+                    ["Believe It If You Want", "This channel is the most subscribed channel on this channel", "Subscribe"],
                 ];
                 var i = Math.floor(Math.random() * alerts.length);
                 document.querySelector(".headertext").innerHTML = alerts[i][0]
